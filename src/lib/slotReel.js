@@ -10,6 +10,10 @@ const BLUR_SCALE = 0.09
 // Vertical-only SVG blur along the reel motion, like the old Pixi blurY
 // (Gaussian sigma ≈ Pixi blur strength / 2)
 const DIRECTIONAL_BLUR_SCALE = 0.5
+// Shrink icons inside their reel cell, centered, so the tallest artwork
+// (253/256 of the box) stays clear of the name plate at the bottom 10%:
+// worst-case bottom edge is (1 - I)/2 + 0.988 * I = 0.9 at I = 0.82
+const ICON_SCALE = 0.82
 
 export function lerp (a1, a2, t) {
   return a1 * (1 - t) + a2 * t
@@ -185,10 +189,12 @@ export function createSlotReel (canvas, { size, atlasJsonUrl, backgroundUrl, pla
   function drawSymbol (entry, y) {
     const f = entry.frame
     const sss = entry.spriteSourceSize
-    const dx = sss.x * scale
-    const dy = y + sss.y * scale
-    const dw = f.w * scale
-    const dh = f.h * scale
+    const iconScale = scale * ICON_SCALE
+    const iconPad = size * (1 - ICON_SCALE) / 2
+    const dx = iconPad + sss.x * iconScale
+    const dy = y + iconPad + sss.y * iconScale
+    const dw = f.w * iconScale
+    const dh = f.h * iconScale
     if (entry.rotated) {
       // stored rotated 90° clockwise in a h×w region; un-rotate to display
       ctx.save()
