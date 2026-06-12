@@ -3,7 +3,7 @@
     <div class="language-switch overview__box">
       <img
         @click="changeLang('en')"
-        src="img/flags/united-kingdom.svg"
+        src="/img/flags/united-kingdom.svg"
         width="32"
         height="32"
         alt="english"
@@ -11,7 +11,7 @@
       />
       <img
         @click="changeLang('de')"
-        src="img/flags/germany.svg"
+        src="/img/flags/germany.svg"
         width="32"
         height="32"
         alt="deutsch"
@@ -19,7 +19,7 @@
       />
       <img
         @click="changeLang('fr')"
-        src="img/flags/france.svg"
+        src="/img/flags/france.svg"
         width="32"
         height="32"
         alt="français"
@@ -27,7 +27,7 @@
       />
       <img
         @click="changeLang('es')"
-        src="img/flags/spain.svg"
+        src="/img/flags/spain.svg"
         width="32"
         height="32"
         alt="español"
@@ -35,7 +35,7 @@
       />
       <img
         @click="changeLang('ja')"
-        src="img/flags/japan.svg"
+        src="/img/flags/japan.svg"
         width="32"
         height="32"
         alt="日本語"
@@ -123,7 +123,7 @@ export default {
     toggleColoredIcons () {
       const { ...q } = this.$route.query
       q.color = q.color === '1' ? '0' : '1'
-      this.artistPalette = q.color === '1' ? 'img/artist-palette.svg' : 'img/artist-palette-bw.svg'
+      this.artistPalette = q.color === '1' ? '/img/artist-palette.svg' : '/img/artist-palette-bw.svg'
       this.$router.push({ path: this.$route.path, query: q })
     },
     resetPerks (type) {
@@ -223,7 +223,7 @@ export default {
   },
   data () {
     const { ...q } = this.$route.query
-    const initialArtistPalette = q.color === '1' ? 'img/artist-palette.svg' : 'img/artist-palette-bw.svg'
+    const initialArtistPalette = q.color === '1' ? '/img/artist-palette.svg' : '/img/artist-palette-bw.svg'
 
     const survivorsRaw = Object.keys(this.perksSHD.frames)
     const survivors = []
@@ -340,9 +340,4 @@ export default {
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
-</style>
-
-<style lang="scss">
-@import "../../public/sprites/surv-css.css";
-@import "../../public/sprites/kill-css.css";
 </style>

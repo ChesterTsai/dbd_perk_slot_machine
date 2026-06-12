@@ -43,14 +43,14 @@
             />
         </div>
         <div v-if="hintVisible" class="hint-text">
-            <img src="/img/icon_shortinfo.png" slot="icon" alt="Survivor" class="info-icon">
+            <img src="/img/icon_shortinfo.png" alt="Survivor" class="info-icon">
             <span v-html="$t('snippets.startPerkRoll')"></span>
         </div>
     </div>
 </template>
 
 <script>
-import PerkSlot from '../components/PerkSlot'
+import PerkSlot from '../components/PerkSlot.vue'
 import rand from '@/lib/randomize'
 import vp from '@/lib/viewport'
 

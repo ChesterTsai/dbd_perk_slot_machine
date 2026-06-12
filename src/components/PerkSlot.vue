@@ -22,6 +22,7 @@ import { createSlotReel } from '../lib/slotReel'
 
 export default {
   name: 'PerkSlot',
+  emits: ['reRollRequested'],
   data: function () {
     return {
       reel: null,
@@ -127,7 +128,7 @@ export default {
       placeholderUrl: `/img/placeholder_${this.type}.png`
     })
   },
-  beforeDestroy () {
+  beforeUnmount () {
     if (this.reel) this.reel.destroy()
   }
 }

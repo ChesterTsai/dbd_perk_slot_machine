@@ -13,7 +13,7 @@
                 </div>
                 <PerkSwitch :itemLength="elementLength" :key="perk.index" @change="perkChange" v-for="perk in orderedPerks" :perk="perk" :name="translate(perk.name)" :type="type"/>
             </div>
-            <div v-if="infoCondition" class="perk-overview__box">
+            <div v-else-if="infoCondition" class="perk-overview__box">
                 <InfoText/>
             </div>
         </transition>
@@ -28,6 +28,8 @@ import InfoText from './InfoText.vue'
 
 export default {
   name: 'MenuItem',
+
+  emits: ['change', 'resetPerks'],
 
   props: {
     perks: {
@@ -81,7 +83,8 @@ export default {
     },
     orderedPerks () {
       const me = this
-      return me.perks.sort((a, b) => {
+      // copy before sorting: mutating a prop inside a computed warns in Vue 3
+      return [...me.perks].sort((a, b) => {
         const nameA = me.translate(a.name).toLowerCase()
         const nameB = me.translate(b.name).toLowerCase()
         if (nameA === nameB) {
@@ -186,7 +189,7 @@ export default {
             opacity: 1;
         }
 
-        .fade-enter,
+        .fade-enter-from,
         .fade-leave-to {
             transform: translateY(-50px);
             opacity: 0;

@@ -1,25 +1,22 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/Home.vue'
 import Survivor from './views/Survivor.vue'
 import Killer from './views/Killer.vue'
 import NotFoundComponent from './views/NotFoundComponent.vue'
-
-Vue.use(Router)
+import perksKHD from '../public/sprites/kill-hd.json'
+import perksSHD from '../public/sprites/surv-hd.json'
 
 const confParams = (route) => ({
   color: route.query.color === '1',
   sids: route.query.sids ? route.query.sids.split(',') : [],
   kids: route.query.kids ? route.query.kids.split(',') : [],
   lang: route.query.lang ? route.query.lang.charAt(0).toUpperCase() + route.query.lang.toLowerCase().slice(1) : 'En',
-  perksKHD: require('../public/sprites/kill-hd.json'),
-  perksKMD: require('../public/sprites/kill-md.json'),
-  perksSHD: require('../public/sprites/surv-hd.json'),
-  perksSMD: require('../public/sprites/surv-md.json')
+  perksKHD,
+  perksSHD
 })
 
-export default new Router({
-  mode: 'history',
+export default createRouter({
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
@@ -39,6 +36,6 @@ export default new Router({
       component: Killer,
       props: confParams
     },
-    { path: '*', component: NotFoundComponent }
+    { path: '/:pathMatch(.*)*', component: NotFoundComponent }
   ]
 })

@@ -16,6 +16,8 @@
 export default {
   name: 'PerkSwitch',
 
+  emits: ['change'],
+
   props: {
     name: {
       type: String,
