@@ -8,7 +8,7 @@
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksKHD.frames)"
+                       :perkData="killerPerkNames"
                        v-if="renderSlot"
             />
             <perk-slot @reRollRequested="randomize"
@@ -18,7 +18,7 @@
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksKHD.frames)"
+                       :perkData="killerPerkNames"
                        v-if="renderSlot"
             />
             <perk-slot @reRollRequested="randomize"
@@ -28,7 +28,7 @@
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksKHD.frames)"
+                       :perkData="killerPerkNames"
                        v-if="renderSlot"
             />
             <perk-slot @reRollRequested="randomize"
@@ -38,7 +38,7 @@
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksKHD.frames)"
+                       :perkData="killerPerkNames"
                        v-if="renderSlot"
             />
         </div>
@@ -55,7 +55,7 @@ import type { PropType } from 'vue'
 import PerkSlot from '../components/PerkSlot.vue'
 import rand from '@/lib/randomize'
 import vp from '@/lib/viewport'
-import type { AtlasJson, Perk } from '@/types'
+import type { Perk } from '@/types'
 
 type PerkSlotInstance = InstanceType<typeof PerkSlot>
 
@@ -88,13 +88,13 @@ export default defineComponent({
       },
       required: false
     },
-    perksKHD: {
-      type: Object as PropType<AtlasJson>,
+    killerPerkNames: {
+      type: Array as PropType<string[]>,
       required: true
     }
   },
   data: function () {
-    const killersRaw = Object.keys(this.perksKHD.frames)
+    const killersRaw = this.killerPerkNames
     const killers: Perk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, kLen = killersRaw.length; i < kLen; i++) {

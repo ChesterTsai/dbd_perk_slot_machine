@@ -5,7 +5,6 @@ A [Dead by Daylight](https://deadbydaylight.com) perk randomizer. Live at [dpsm.
 ## Prerequisites
 
 - Node.js 22+
-- [TexturePacker](https://www.codeandweb.com/texturepacker) — only needed when adding or updating perk icons
 
 ## Local Development
 
@@ -15,9 +14,13 @@ npm run dev      # dev server at http://localhost:8080
 npm run build    # production build → dist/
 ```
 
+The sprite sheets in `public/sprites/` are generated automatically from the
+source icons before `dev`, `serve` and `build` (re-run manually with
+`npm run sprites`). They are build output and not committed.
+
 ## Adding a Perk
 
-1. **Add the icon** — drop a 256×256 PNG into the relevant source folder:
+1. **Add the icons** — drop a 256×256 PNG into both source folders for the role:
 
    | Folder | Use |
    |--------|-----|
@@ -26,22 +29,9 @@ npm run build    # production build → dist/
    | `assets/iconsourceSurv/` | Survivor perk, default style |
    | `assets/iconsourceSurvColor/` | Survivor perk, colored style |
 
-   The filename becomes the perk key (e.g. `142_myNewPerk.png` → key `142_myNewPerk`). Use a numeric prefix to keep the list ordered.
+   The filename becomes the perk key (e.g. `142_myNewPerk.png` → key `142_myNewPerk`). The numeric prefix is the perk's index: use the next free number (= the current file count of the folder), with no gaps. The default-style and colored icon must have the same filename; the sprite generator checks all of this and tells you what's wrong.
 
-2. **Regenerate the sprite atlases** — run TexturePacker for every `.tps` file in `assets/`:
-
-   ```sh
-   for f in assets/*.tps; do TexturePacker "$f"; done
-   ```
-
-   This updates the JSON atlases and PNG sheets in `public/sprites/`.
-
-3. **Fix the CSS** — TexturePacker emits class names that start with a digit, which is invalid CSS. After regenerating, open `public/sprites/kill-css.css` and `surv-css.css` and apply this regex replace (VSCode Find & Replace with regex enabled):
-
-   - Find: `\n\.([\d]+)_`
-   - Replace: `\n._$1_`
-
-4. **Add the perk name** — in every locale file under `src/locales/`, add an entry under `perks.killer` or `perks.survivor` using the key from step 1:
+2. **Add the perk name** — in every locale file under `src/locales/`, add an entry under `perks.killer` or `perks.survivor` using the key from step 1:
 
    ```json
    "perks": {
@@ -62,8 +52,8 @@ These query parameters are used for sharing and streaming:
 | Parameter | Example | Description |
 |-----------|---------|-------------|
 | `lang` | `lang=de` | UI language (`en`, `de`, `es`, `fr`, `ja`) |
-| `kids` | `kids=01_agitation,02_bamboozle` | Comma-separated active killer perk keys |
-| `sids` | `sids=00_adreneline` | Comma-separated active survivor perk keys |
+| `kids` | `kids=1,2,17` | Comma-separated active killer perk indices (`none` disables all) |
+| `sids` | `sids=0,33` | Comma-separated active survivor perk indices (`none` disables all) |
 | `color` | `color=1` | Use colored perk icons |
 | `streammode` | `streammode=1` | Hide UI chrome for OBS/XSplit overlays |
 | `autostart` | `autostart=1000` | Auto-roll N milliseconds after page load |
@@ -71,4 +61,4 @@ These query parameters are used for sharing and streaming:
 
 ## Tech Stack
 
-Vue 3, Vite, vue-router 4, vue-i18n 10. The slot reel is rendered via plain Canvas 2D using a TexturePacker JSON atlas. Deployed to Netlify; configuration is in `netlify.toml`.
+Vue 3, Vite, vue-router 4, vue-i18n 10. The slot reel is rendered via plain Canvas 2D using a sprite atlas; atlases, CSS sheets and the perk manifest are generated at build time by `scripts/build-sprites.mjs` (sharp). Deployed to Netlify; configuration is in `netlify.toml`.

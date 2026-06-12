@@ -10,7 +10,8 @@ export interface SelectablePerk extends Perk {
   checked: boolean
 }
 
-// TexturePacker "JSON (hash)" atlas format (public/sprites/*-hd.json)
+// TexturePacker "JSON (hash)" atlas format, emitted by
+// scripts/build-sprites.mjs (public/sprites/*-hd.json)
 export interface AtlasFrame {
   frame: { x: number, y: number, w: number, h: number }
   rotated: boolean
@@ -23,5 +24,6 @@ export interface AtlasJson {
   frames: Record<string, AtlasFrame>
   meta: {
     image: string
+    size: { w: number, h: number }
   }
 }

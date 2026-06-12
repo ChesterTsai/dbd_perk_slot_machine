@@ -76,7 +76,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import MenuItem from '../components/MenuItem.vue'
-import type { AtlasJson, SelectablePerk } from '@/types'
+import type { SelectablePerk } from '@/types'
 
 export default defineComponent({
   name: 'home',
@@ -107,12 +107,12 @@ export default defineComponent({
       },
       required: false
     },
-    perksKHD: {
-      type: Object as PropType<AtlasJson>,
+    killerPerkNames: {
+      type: Array as PropType<string[]>,
       required: true
     },
-    perksSHD: {
-      type: Object as PropType<AtlasJson>,
+    survivorPerkNames: {
+      type: Array as PropType<string[]>,
       required: true
     }
   },
@@ -227,7 +227,7 @@ export default defineComponent({
     const { ...q } = this.$route.query
     const initialArtistPalette = q.color === '1' ? '/img/artist-palette.svg' : '/img/artist-palette-bw.svg'
 
-    const survivorsRaw = Object.keys(this.perksSHD.frames)
+    const survivorsRaw = this.survivorPerkNames
     const survivors: SelectablePerk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, sLen = survivorsRaw.length; i < sLen; i++) {
@@ -240,7 +240,7 @@ export default defineComponent({
       }
     }
 
-    const killersRaw = Object.keys(this.perksKHD.frames)
+    const killersRaw = this.killerPerkNames
     const killers: SelectablePerk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, kLen = killersRaw.length; i < kLen; i++) {
