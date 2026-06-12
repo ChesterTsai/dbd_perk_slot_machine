@@ -1,8 +1,9 @@
 <template>
     <div>
         <div id="perkSlotContainerInner">
-            <perkslot0 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot0"
+                       :slotIndex="0"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
@@ -10,8 +11,9 @@
                        :perkData="Object.keys(perksSHD.frames)"
                        v-if="renderSlot"
             />
-            <perkslot1 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot1"
+                       :slotIndex="1"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
@@ -19,8 +21,9 @@
                        :perkData="Object.keys(perksSHD.frames)"
                        v-if="renderSlot"
             />
-            <perkslot2 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot2"
+                       :slotIndex="2"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
@@ -28,8 +31,9 @@
                        :perkData="Object.keys(perksSHD.frames)"
                        v-if="renderSlot"
             />
-            <perkslot3 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot3"
+                       :slotIndex="3"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
@@ -46,17 +50,14 @@
 </template>
 
 <script>
-import PixiPerkSlot from '../components/PixiPerkSlot'
+import PerkSlot from '../components/PerkSlot'
 import rand from '@/lib/randomize'
 import vp from '@/lib/viewport'
 
 export default {
   name: 'Survivor',
   components: {
-    perkslot0: PixiPerkSlot,
-    perkslot1: PixiPerkSlot,
-    perkslot2: PixiPerkSlot,
-    perkslot3: PixiPerkSlot
+    PerkSlot
   },
   props: {
     lang: {
@@ -113,9 +114,9 @@ export default {
     }
   },
   methods: {
-    randomize: function (el, ev) {
+    randomize: function (slotIndex, ev) {
       // if shift is pressed, only randomize the perk that was clicked
-      if (el && ev.data.originalEvent.shiftKey && (this.sids.length > 4 || this.sids.length === 0)) {
+      if (ev && ev.shiftKey && (this.sids.length > 4 || this.sids.length === 0)) {
         let randomSingle = rand.getRandomData(1, this.sids, this.perkData, this.lastRoll)
         let counter = 0
         // while the perk is in the last roll, get a new random perk, give up after 10 tries
@@ -124,11 +125,10 @@ export default {
           randomSingle = rand.getRandomData(1, this.sids, this.perkData, this.lastRoll)
           counter++
         }
-        // update the lastroll with the new perk, using the component tag (e.g. 'perkslot0') to get the index
-        const replaceIndex = parseInt(el.$options._componentTag.slice(-1))
-        this.lastRoll[replaceIndex] = randomSingle[0]
+        // update the lastroll with the new perk, using the slot index emitted by the component
+        this.lastRoll[slotIndex] = randomSingle[0]
         // actually roll the slot to the new perk
-        el.rollWheel(randomSingle[0], this.$t(`perks.survivor.desc.${randomSingle[0].name}`))
+        this.$refs['perkslot' + slotIndex].rollWheel(randomSingle[0], this.$t(`perks.survivor.desc.${randomSingle[0].name}`))
         return
       }
       if (!this.lastRoll) this.lastRoll = [this.perkData[0], this.perkData[0], this.perkData[0], this.perkData[0]]
