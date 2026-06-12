@@ -49,11 +49,12 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import UiButton from './components/UiButton.vue'
 import BackButton from './components/BackButton.vue'
 
-export default {
+export default defineComponent({
   components: {
     UiButton,
     BackButton
@@ -64,9 +65,9 @@ export default {
     }
   },
   mounted: function () {
-    this.$i18n.locale = this.$route.query.lang ? this.$route.query.lang.toLowerCase() : 'en'
+    this.$i18n.locale = this.$route.query.lang ? (this.$route.query.lang as string).toLowerCase() : 'en'
   }
-}
+})
 </script>
 
 <style lang="scss">

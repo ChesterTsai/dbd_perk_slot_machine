@@ -17,18 +17,22 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
 import { createSlotReel } from '../lib/slotReel'
+import type { SlotReel } from '../lib/slotReel'
+import type { Perk } from '../types'
 
-export default {
+export default defineComponent({
   name: 'PerkSlot',
   emits: ['reRollRequested'],
   data: function () {
     return {
-      reel: null,
+      reel: null as SlotReel | null,
       active: false,
       hasRolled: false,
-      targetPerkId: null,
+      targetPerkId: null as number | null,
       popupDisabled: true,
       tooltipVisible: false,
       tooltipShift: 0,
@@ -63,7 +67,7 @@ export default {
       required: true
     },
     perkData: {
-      type: Array,
+      type: Array as PropType<string[]>,
       required: true
     },
     slotIndex: {
@@ -72,21 +76,21 @@ export default {
     }
   },
   methods: {
-    onPointerDown: function (ev) {
+    onPointerDown: function (ev: PointerEvent) {
       if (!this.hasRolled) {
         this.$emit('reRollRequested')
       } else {
         this.$emit('reRollRequested', this.slotIndex, ev)
       }
     },
-    onHover: function (entered) {
+    onHover: function (entered: boolean) {
       this.tooltipVisible = entered
       if (!entered) {
         this.tooltipShift = 0
         return
       }
       this.$nextTick(() => {
-        const tip = this.$refs.tooltip
+        const tip = this.$refs.tooltip as HTMLDivElement | undefined
         if (!tip) return
         const rect = tip.getBoundingClientRect()
         const margin = 8
@@ -97,7 +101,7 @@ export default {
         }
       })
     },
-    rollWheel: function (targetId, newPerkDescription) {
+    rollWheel: function (targetId: Perk, newPerkDescription: string) {
       if (this.active) return
       this.perkDescription = ''
       if (!newPerkDescription.startsWith('perks.')) this.newPerkDescription = newPerkDescription
@@ -105,15 +109,16 @@ export default {
       this.targetPerkId = targetId.index
       this.hasRolled = true
       this.active = true
-      this.reel.ready.then(() => {
-        this.reel.rollTo(this.targetPerkId, this._reelComplete)
+      const reel = this.reel as SlotReel
+      reel.ready.then(() => {
+        reel.rollTo(this.targetPerkId as number, this._reelComplete)
       })
       return true
     },
     _reelComplete: function () {
       this.active = false
-      const perkName = this.$t(`perks.${this.type === 'Surv' ? 'survivor' : 'killer'}.${this.perkData[this.targetPerkId]}`).toUpperCase()
-      this.reel.showLabel(perkName)
+      const perkName = this.$t(`perks.${this.type === 'Surv' ? 'survivor' : 'killer'}.${this.perkData[this.targetPerkId as number]}`).toUpperCase()
+      ;(this.reel as SlotReel).showLabel(perkName)
       this.perkDescription = this.newPerkDescription
       if (this.perkDescription && this.perkDescription.length > 0) {
         this.popupDisabled = false
@@ -121,7 +126,7 @@ export default {
     }
   },
   mounted () {
-    this.reel = createSlotReel(this.$refs.canvas, {
+    this.reel = createSlotReel(this.$refs.canvas as HTMLCanvasElement, {
       size: this.elementLength,
       atlasJsonUrl: `/sprites/${this.type.toLowerCase()}${this.colorized ? 'color' : ''}-hd.json`,
       backgroundUrl: '/img/perkBg.png',
@@ -131,7 +136,7 @@ export default {
   beforeUnmount () {
     if (this.reel) this.reel.destroy()
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

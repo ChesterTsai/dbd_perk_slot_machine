@@ -25,13 +25,17 @@
     </button>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
+
+export default defineComponent({
   name: 'UiButton',
 
   props: {
     routerLink: {
-      type: Object,
+      type: Object as PropType<RouteLocationRaw>,
       default () {
         return {}
       },
@@ -57,7 +61,7 @@ export default {
       return !!this.$slots.icon
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,10 +1,10 @@
 export default {
-  getWidth: function () {
+  getWidth (): number {
     return window.innerWidth ||
         document.documentElement.clientWidth ||
         document.body.clientWidth
   },
-  getElementLength: function () {
+  getElementLength (): number {
     const vw = this.getWidth()
     const elLen = vw / 4
     if (elLen > 256) return 256

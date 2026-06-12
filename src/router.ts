@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteLocationNormalized } from 'vue-router'
 import Home from './views/Home.vue'
 import Survivor from './views/Survivor.vue'
 import Killer from './views/Killer.vue'
@@ -6,11 +7,11 @@ import NotFoundComponent from './views/NotFoundComponent.vue'
 import perksKHD from '../public/sprites/kill-hd.json'
 import perksSHD from '../public/sprites/surv-hd.json'
 
-const confParams = (route) => ({
+const confParams = (route: RouteLocationNormalized) => ({
   color: route.query.color === '1',
-  sids: route.query.sids ? route.query.sids.split(',') : [],
-  kids: route.query.kids ? route.query.kids.split(',') : [],
-  lang: route.query.lang ? route.query.lang.charAt(0).toUpperCase() + route.query.lang.toLowerCase().slice(1) : 'En',
+  sids: route.query.sids ? (route.query.sids as string).split(',') : [],
+  kids: route.query.kids ? (route.query.kids as string).split(',') : [],
+  lang: route.query.lang ? (route.query.lang as string).charAt(0).toUpperCase() + (route.query.lang as string).toLowerCase().slice(1) : 'En',
   perksKHD,
   perksSHD
 })

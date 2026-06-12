@@ -121,16 +121,20 @@
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'InfoText',
 
   props: {
     value: {
-      required: false
+      type: String,
+      required: false,
+      default: undefined
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -72,10 +72,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
 import MenuItem from '../components/MenuItem.vue'
+import type { AtlasJson, SelectablePerk } from '@/types'
 
-export default {
+export default defineComponent({
   name: 'home',
   components: {
     MenuItem
@@ -91,30 +94,30 @@ export default {
       required: false
     },
     sids: {
-      type: Array,
+      type: Array as PropType<string[]>,
       default: function () {
         return []
       },
       required: false
     },
     kids: {
-      type: Array,
+      type: Array as PropType<string[]>,
       default: function () {
         return []
       },
       required: false
     },
     perksKHD: {
-      type: Object,
+      type: Object as PropType<AtlasJson>,
       required: true
     },
     perksSHD: {
-      type: Object,
+      type: Object as PropType<AtlasJson>,
       required: true
     }
   },
   methods: {
-    changeLang (lang) {
+    changeLang (lang: string) {
       const { ...q } = this.$route.query
       q.lang = lang
       this.$i18n.locale = lang
@@ -126,7 +129,7 @@ export default {
       this.artistPalette = q.color === '1' ? '/img/artist-palette.svg' : '/img/artist-palette-bw.svg'
       this.$router.push({ path: this.$route.path, query: q })
     },
-    resetPerks (type) {
+    resetPerks (type: string) {
       const { ...query } = this.$route.query
       switch (type) {
         case 'Survivor':
@@ -161,10 +164,10 @@ export default {
           break
       }
     },
-    change (type) {
+    change (type: string) {
       let perkExclusion = false
       const { ...query } = this.$route.query
-      const chosenPerks = []
+      const chosenPerks: number[] = []
       switch (type) {
         case 'Survivor':
           for (let i = 0; i < this.perks.survivors.length; i++) {
@@ -197,8 +200,7 @@ export default {
           this.$router.push({ path: this.$route.path, query: query })
           break
         default:
-          // eslint-disable-next-line
-          console.warn(`changes to unknown perk type ${type}`);
+          console.warn(`changes to unknown perk type ${type}`)
       }
     }
   },
@@ -226,7 +228,7 @@ export default {
     const initialArtistPalette = q.color === '1' ? '/img/artist-palette.svg' : '/img/artist-palette-bw.svg'
 
     const survivorsRaw = Object.keys(this.perksSHD.frames)
-    const survivors = []
+    const survivors: SelectablePerk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, sLen = survivorsRaw.length; i < sLen; i++) {
       const perkFileName = survivorsRaw[i]
@@ -239,7 +241,7 @@ export default {
     }
 
     const killersRaw = Object.keys(this.perksKHD.frames)
-    const killers = []
+    const killers: SelectablePerk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, kLen = killersRaw.length; i < kLen; i++) {
       const perkFileName = killersRaw[i]
@@ -259,7 +261,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
