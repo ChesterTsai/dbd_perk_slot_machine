@@ -1,0 +1,342 @@
+// Canvas 2D slot reel, replacing the former Pixi.js implementation.
+// The tween/easing/position math is ported unchanged so the animation
+// behaves exactly like before.
+
+import type { AtlasFrame, AtlasJson } from '../types'
+
+const SOURCE_SIZE = 256 // all perk icons are packed from 256x256 sources
+const ROLL_TIME = 4000
+// Symmetric CSS blur() fallback for browsers without SVG canvas filters;
+// kept low because it also softens horizontally
+const BLUR_SCALE = 0.09
+// Vertical-only SVG blur along the reel motion, like the old Pixi blurY
+// (Gaussian sigma ≈ Pixi blur strength / 2)
+const DIRECTIONAL_BLUR_SCALE = 0.5
+// Shrink icons inside their reel cell, centered, so the tallest artwork
+// (253/256 of the box) stays clear of the name plate at the bottom 10%:
+// worst-case bottom edge is (1 - I)/2 + 0.988 * I = 0.9 at I = 0.82
+const ICON_SCALE = 0.82
+
+export function lerp (a1: number, a2: number, t: number): number {
+  return a1 * (1 - t) + a2 * t
+}
+
+export function backout (amount: number): (t: number) => number {
+  return (t: number) => {
+    return (--t * t * ((amount + 1) * t + amount) + 1)
+  }
+}
+
+export function symbolY (position: number, j: number, count: number, size: number): number {
+  return (position + j) % count * size - size
+}
+
+export function targetPosition (count: number, targetIndex: number): number {
+  return (count + 1) - targetIndex
+}
+
+// the ctx only needs `font` and `measureText`, which keeps the helper testable
+export interface FontMeasureContext {
+  font: string
+  measureText (text: string): { width: number }
+}
+
+export function fitFontSize (ctx: FontMeasureContext, text: string, maxWidth: number, sizeScale: number, startSize = 16): number {
+  let fontSize = startSize
+  while (fontSize > 1) {
+    ctx.font = `bold ${fontSize * sizeScale}px Arial`
+    const width = ctx.measureText(text).width
+    if (width <= maxWidth || width <= 0) break
+    fontSize--
+  }
+  return fontSize
+}
+
+let filterIdCounter = 0
+
+interface DirectionalBlurFilter {
+  id: string
+  blurEl: SVGFEGaussianBlurElement
+  svg: SVGSVGElement
+}
+
+// SVG filter with a two-value stdDeviation gives a vertical-only Gaussian,
+// which canvas can use via ctx.filter = 'url(#...)'
+function createDirectionalBlurFilter (): DirectionalBlurFilter {
+  const ns = 'http://www.w3.org/2000/svg'
+  const id = `slot-reel-blur-${filterIdCounter++}`
+  const svg = document.createElementNS(ns, 'svg')
+  svg.setAttribute('width', '0')
+  svg.setAttribute('height', '0')
+  svg.setAttribute('aria-hidden', 'true')
+  svg.style.position = 'absolute'
+  const filter = document.createElementNS(ns, 'filter')
+  filter.setAttribute('id', id)
+  // widen the filter region so long vertical streaks don't get clipped
+  filter.setAttribute('x', '-50%')
+  filter.setAttribute('y', '-50%')
+  filter.setAttribute('width', '200%')
+  filter.setAttribute('height', '200%')
+  const blur = document.createElementNS(ns, 'feGaussianBlur')
+  blur.setAttribute('stdDeviation', '0 0')
+  filter.appendChild(blur)
+  svg.appendChild(filter)
+  document.body.appendChild(svg)
+  return { id, blurEl: blur, svg }
+}
+
+// A browser that parses url() but can't resolve the SVG filter renders
+// nothing at all, so probe by actually drawing through the filter.
+function directionalBlurWorks (filter: DirectionalBlurFilter): boolean {
+  const c = document.createElement('canvas')
+  c.width = 8
+  c.height = 8
+  const t = c.getContext('2d')
+  if (!t) return false
+  t.filter = `url(#${filter.id})`
+  if (t.filter === 'none' || t.filter === '') return false
+  t.fillStyle = '#ffffff'
+  t.fillRect(0, 0, 8, 8)
+  if (t.getImageData(4, 4, 1, 1).data[3] === 0) return false
+  // verify stdDeviation mutations are picked up between draws
+  filter.blurEl.setAttribute('stdDeviation', '0 4')
+  t.clearRect(0, 0, 8, 8)
+  t.filter = 'none'
+  t.filter = `url(#${filter.id})`
+  t.fillRect(2, 2, 4, 4)
+  const blurred = t.getImageData(4, 0, 1, 1).data[3] > 0 // smeared above the rect
+  filter.blurEl.setAttribute('stdDeviation', '0 0')
+  return blurred
+}
+
+function loadImage (url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = url
+  })
+}
+
+interface Tween {
+  object: { position: number }
+  property: 'position'
+  propertyBeginValue: number
+  target: number
+  easing: (t: number) => number
+  time: number
+  change: ((tween: Tween) => void) | null
+  complete: ((tween: Tween) => void) | null
+  start: number
+}
+
+interface ReelState {
+  frames: AtlasFrame[] // in atlas JSON order
+  atlas: HTMLImageElement | null
+  background: HTMLImageElement | null
+  placeholder: HTMLImageElement | null
+  position: number
+  previousPosition: number
+  tweening: Tween[]
+  label: string | null
+  started: boolean // placeholder is shown until the first roll
+  rafId: number | null
+  destroyed: boolean
+}
+
+export interface SlotReelOptions {
+  size: number
+  atlasJsonUrl: string
+  backgroundUrl: string
+  placeholderUrl: string
+}
+
+export interface SlotReel {
+  ready: Promise<void>
+  rollTo (targetIndex: number, oncomplete: (() => void) | null): void
+  showLabel (text: string): void
+  destroy (): void
+}
+
+export function createSlotReel (canvas: HTMLCanvasElement, { size, atlasJsonUrl, backgroundUrl, placeholderUrl }: SlotReelOptions): SlotReel {
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+  const supportsFilter = typeof ctx.filter === 'string'
+  const scale = size / SOURCE_SIZE
+
+  let directionalBlur: DirectionalBlurFilter | null = null
+  if (supportsFilter) {
+    const filter = createDirectionalBlurFilter()
+    if (directionalBlurWorks(filter)) {
+      directionalBlur = filter
+    } else {
+      filter.svg.remove()
+    }
+  }
+
+  const state: ReelState = {
+    frames: [],
+    atlas: null,
+    background: null,
+    placeholder: null,
+    position: 0,
+    previousPosition: 0,
+    tweening: [],
+    label: null,
+    started: false,
+    rafId: null,
+    destroyed: false
+  }
+
+  const ready = (async () => {
+    const res = await fetch(atlasJsonUrl)
+    const atlasData: AtlasJson = await res.json()
+    const atlasImageUrl = atlasJsonUrl.replace(/[^/]+$/, atlasData.meta.image)
+    const [atlas, background, placeholder] = await Promise.all([
+      loadImage(atlasImageUrl),
+      loadImage(backgroundUrl),
+      loadImage(placeholderUrl)
+    ])
+    state.frames = Object.values(atlasData.frames)
+    state.atlas = atlas
+    state.background = background
+    state.placeholder = placeholder
+    if (!state.destroyed) {
+      state.rafId = window.requestAnimationFrame(frameLoop)
+    }
+  })()
+
+  function tweenTo (object: { position: number }, property: 'position', target: number, time: number, easing: (t: number) => number, onchange: Tween['change'], oncomplete: Tween['complete']): Tween {
+    const tween: Tween = {
+      object: object,
+      property: property,
+      propertyBeginValue: object[property],
+      target: target,
+      easing: easing,
+      time: time,
+      change: onchange,
+      complete: oncomplete,
+      start: Date.now()
+    }
+    state.tweening.push(tween)
+    return tween
+  }
+
+  function updateTweens (): void {
+    const now = Date.now()
+    const remove: Tween[] = []
+    for (let i = 0; i < state.tweening.length; i++) {
+      const t = state.tweening[i]
+      const phase = Math.min(1, (now - t.start) / t.time)
+
+      t.object[t.property] = lerp(t.propertyBeginValue, t.target, t.easing(phase))
+      if (t.change) t.change(t)
+      if (phase === 1) {
+        t.object[t.property] = t.target
+        if (t.complete) t.complete(t)
+        remove.push(t)
+      }
+    }
+    for (let i = 0; i < remove.length; i++) {
+      state.tweening.splice(state.tweening.indexOf(remove[i]), 1)
+    }
+  }
+
+  function drawSymbol (entry: AtlasFrame, y: number): void {
+    const f = entry.frame
+    const sss = entry.spriteSourceSize
+    const iconScale = scale * ICON_SCALE
+    const iconPad = size * (1 - ICON_SCALE) / 2
+    const dx = iconPad + sss.x * iconScale
+    const dy = y + iconPad + sss.y * iconScale
+    const dw = f.w * iconScale
+    const dh = f.h * iconScale
+    const atlas = state.atlas as HTMLImageElement
+    if (entry.rotated) {
+      // stored rotated 90° clockwise in a h×w region; un-rotate to display
+      ctx.save()
+      ctx.translate(dx + dw / 2, dy + dh / 2)
+      ctx.rotate(-Math.PI / 2)
+      ctx.drawImage(atlas, f.x, f.y, f.h, f.w, -dh / 2, -dw / 2, dh, dw)
+      ctx.restore()
+    } else {
+      ctx.drawImage(atlas, f.x, f.y, f.w, f.h, dx, dy, dw, dh)
+    }
+  }
+
+  function drawLabel (text: string): void {
+    const textBoxBorder = size * 0.012
+    const textBoxY = size * 0.9
+    const textBoxWidth = size * 0.967
+    const textBoxHeight = size * 0.1
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+    ctx.fillRect(textBoxBorder, textBoxY, textBoxWidth, textBoxHeight)
+
+    const fontSize = fitFontSize(ctx, text, textBoxWidth, scale)
+    ctx.font = `bold ${fontSize * scale}px Arial`
+    ctx.fillStyle = '#FFFFFF'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.fillText(text, size / 2, size * 0.91)
+  }
+
+  function frameLoop (): void {
+    updateTweens()
+
+    // blur depends on per-frame movement; like the Pixi version this is
+    // deliberately frame-rate dependent — it's part of the look
+    const speed = Math.abs(state.position - state.previousPosition) * 8
+    const blur = speed * (directionalBlur ? DIRECTIONAL_BLUR_SCALE : BLUR_SCALE)
+    state.previousPosition = state.position
+
+    ctx.clearRect(0, 0, size, size)
+    ctx.drawImage(state.background as HTMLImageElement, 0, 0, size, size)
+
+    if (!state.started) {
+      ctx.drawImage(state.placeholder as HTMLImageElement, 0, 0, size, size)
+    } else {
+      const count = state.frames.length
+      if (directionalBlur && blur >= 0.1) {
+        directionalBlur.blurEl.setAttribute('stdDeviation', `0 ${blur}`)
+        ctx.filter = `url(#${directionalBlur.id})`
+      } else if (supportsFilter && blur >= 0.1) {
+        ctx.filter = `blur(${blur}px)`
+      }
+      for (let j = 0; j < count; j++) {
+        const y = symbolY(state.position, j, count, size)
+        if (y <= -size || y >= size) continue
+        drawSymbol(state.frames[j], y)
+      }
+      if (supportsFilter) {
+        ctx.filter = 'none'
+      }
+      if (state.label !== null) {
+        drawLabel(state.label)
+      }
+    }
+
+    state.rafId = window.requestAnimationFrame(frameLoop)
+  }
+
+  return {
+    ready,
+    rollTo (targetIndex: number, oncomplete: (() => void) | null): void {
+      state.started = true
+      state.label = null
+      state.tweening = []
+      tweenTo(state, 'position', targetPosition(state.frames.length, targetIndex), ROLL_TIME, backout(0.6), null, oncomplete)
+    },
+    showLabel (text: string): void {
+      state.label = text
+    },
+    destroy (): void {
+      state.destroyed = true
+      if (state.rafId !== null) {
+        window.cancelAnimationFrame(state.rafId)
+      }
+      if (directionalBlur) {
+        directionalBlur.svg.remove()
+      }
+    }
+  }
+}

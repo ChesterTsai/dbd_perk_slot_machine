@@ -2,9 +2,11 @@
     <div class="info-text">
         <div class="paragraph">
             <h2>{{ $t("about.header") }}</h2>
-            <i18n tag="p" path="about.description">
-                <a place="url" href="https://deadbydaylight.com/">Dead by Daylight</a>
-            </i18n>
+            <i18n-t tag="p" keypath="about.description">
+                <template #url>
+                    <a href="https://deadbydaylight.com/">Dead by Daylight</a>
+                </template>
+            </i18n-t>
         </div>
         <div class="paragraph yt">
             <iframe class="video" :src="$t('about.videoUrl')"
@@ -21,17 +23,25 @@
         <div class="paragraph">
             <h2>{{ $t("streaming.header") }}</h2>
             <p>{{ $t("streaming.description") }}</p>
-            <i18n tag="p" path="streaming.options.description">
-                <code place="transparent">{{ $t("streaming.options.transparent") }}</code>
-                <code place="autostart">{{ $t("streaming.options.autostart") }}</code>
-            </i18n>
+            <i18n-t tag="p" keypath="streaming.options.description">
+                <template #transparent>
+                    <code>{{ $t("streaming.options.transparent") }}</code>
+                </template>
+                <template #autostart>
+                    <code>{{ $t("streaming.options.autostart") }}</code>
+                </template>
+            </i18n-t>
         </div>
         <div class="paragraph">
             <h2>{{ $t("attribution.coloredicons.header") }}</h2>
-            <i18n tag="p" path="attribution.coloredicons.description">
-                    <a place="profile" href="https://steamcommunity.com/id/EvaZioN67/">EvaZioN</a>
-                    <a place="group" href="https://steamcommunity.com/groups/Nebula_Perks">{{ $t("attribution.coloredicons.groupText") }}</a>
-                </i18n>
+            <i18n-t tag="p" keypath="attribution.coloredicons.description">
+                    <template #profile>
+                        <a href="https://steamcommunity.com/id/EvaZioN67/">EvaZioN</a>
+                    </template>
+                    <template #group>
+                        <a href="https://steamcommunity.com/groups/Nebula_Perks">{{ $t("attribution.coloredicons.groupText") }}</a>
+                    </template>
+                </i18n-t>
         </div>
         <div class="paragraph">
             <h2>{{ $t("team.header") }}</h2>
@@ -59,48 +69,72 @@
             <h2>{{ $t("attribution.header") }}</h2>
             <p>{{ $t("attribution.description") }}</p>
             <ul>
-                <i18n tag="li" path="attribution.wiki.description">
-                    <a place="wikiUrl" :href="$t('attribution.wiki.wikiUrl')">{{ $t('attribution.wiki.wikiUrlText') }}</a>
-                    <a place="licenseUrl" :href="$t('attribution.wiki.licenseUrl')">{{ $t('attribution.wiki.licenseUrl') }}</a>
-                </i18n>
+                <i18n-t tag="li" keypath="attribution.wiki.description">
+                    <template #wikiUrl>
+                        <a :href="$t('attribution.wiki.wikiUrl')">{{ $t('attribution.wiki.wikiUrlText') }}</a>
+                    </template>
+                    <template #licenseUrl>
+                        <a :href="$t('attribution.wiki.licenseUrl')">{{ $t('attribution.wiki.licenseUrl') }}</a>
+                    </template>
+                </i18n-t>
                 <!-- <i18n tag="li" path="attribution.rocketleaguecat.description">
                     <a href="https://imgur.com/gallery/8i5gR" place="bgImage">{{ $t("attribution.rocketleaguecat.bgImageText") }}</a>
                     <a place="profile" href="https://imgur.com/user/rocketleaguecat">rocketleaguecat</a>
                 </i18n> -->
-                <i18n tag="li" path="attribution.bhvr.description">
-                    <a place="bhvr" href="https://www.bhvr.com/">BHVR</a>
-                    <a place="dbd" href="https://deadbydaylight.com">Dead by Daylight</a>
-                </i18n>
-                <i18n tag="li" path="attribution.freepik.description">
-                    <a place="freepik" href="https://www.freepik.com/" title="Freepik">Freepik</a>
-                    <a place="flaticon" href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-                    <a place="licenseUrl" href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
-                </i18n>
-                <i18n tag="li" path="attribution.translation.description" v-if="$t('attribution.translation.description') !== 'attribution.translation.description'">
-                  <a place="profile" :href="$t('attribution.translation.profileUrl')" :title="$t('attribution.translation.translator')">{{ $t("attribution.translation.translator") }}</a>
-                </i18n>
+                <i18n-t tag="li" keypath="attribution.bhvr.description">
+                    <template #bhvr>
+                        <a href="https://www.bhvr.com/">BHVR</a>
+                    </template>
+                    <template #dbd>
+                        <a href="https://deadbydaylight.com">Dead by Daylight</a>
+                    </template>
+                </i18n-t>
+                <i18n-t tag="li" keypath="attribution.freepik.description">
+                    <template #freepik>
+                        <a href="https://www.freepik.com/" title="Freepik">Freepik</a>
+                    </template>
+                    <template #flaticon>
+                        <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+                    </template>
+                    <template #licenseUrl>
+                        <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+                    </template>
+                </i18n-t>
+                <i18n-t tag="li" keypath="attribution.translation.description" v-if="$t('attribution.translation.description') !== 'attribution.translation.description'">
+                  <template #profile>
+                      <a :href="$t('attribution.translation.profileUrl')" :title="$t('attribution.translation.translator')">{{ $t("attribution.translation.translator") }}</a>
+                  </template>
+                </i18n-t>
             </ul>
         </div>
         <div class="paragraph">
             <h2>{{ $t("disclaimer.header") }}</h2>
-            <i18n tag="p" path="disclaimer.description">
-                <span place="email" class="e-mail" data-user="mspd" data-website="moc.tdats3"></span>
-                <a place="statcounter" href="https://statcounter.com/">statcounter</a>
-            </i18n>
+            <i18n-t tag="p" keypath="disclaimer.description">
+                <template #email>
+                    <span class="e-mail" data-user="mspd" data-website="moc.tdats3"></span>
+                </template>
+                <template #statcounter>
+                    <a href="https://statcounter.com/">statcounter</a>
+                </template>
+            </i18n-t>
         </div>
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'InfoText',
 
   props: {
     value: {
-      required: false
+      type: String,
+      required: false,
+      default: undefined
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

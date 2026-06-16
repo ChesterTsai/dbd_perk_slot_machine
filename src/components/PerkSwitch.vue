@@ -12,9 +12,15 @@
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
+import type { SelectablePerk } from '@/types'
+
+export default defineComponent({
   name: 'PerkSwitch',
+
+  emits: ['change'],
 
   props: {
     name: {
@@ -22,9 +28,11 @@ export default {
       required: true
     },
     perk: {
-      type: Object,
+      type: Object as PropType<SelectablePerk>,
+      // pre-TS quirk: the fallback was an empty array; kept for parity,
+      // in practice the prop is always passed
       default () {
-        return []
+        return [] as unknown as SelectablePerk
       }
     },
     type: {
@@ -39,7 +47,7 @@ export default {
 
   data () {
     return {
-      currentPerk: {}
+      currentPerk: {} as SelectablePerk
     }
   },
 
@@ -75,12 +83,12 @@ export default {
     calcSvgViewBox () {
       // Animation frames are necessary because otherwise the width is calculated before the text has changed
       window.requestAnimationFrame(() => {
-        this.$refs.svg.removeAttribute('viewBox')
+        (this.$refs.svg as SVGSVGElement).removeAttribute('viewBox')
       })
       window.requestAnimationFrame(() => {
-        const bb = this.$refs.svgText.getBBox()
+        const bb = (this.$refs.svgText as SVGTextElement).getBBox()
         if (bb.width <= this.itemLength) return
-        this.$refs.svg.setAttribute('viewBox', '0 0 ' + bb.width + ' ' + bb.height)
+        ;(this.$refs.svg as SVGSVGElement).setAttribute('viewBox', '0 0 ' + bb.width + ' ' + bb.height)
       })
     },
     onClickPerk () {
@@ -88,7 +96,7 @@ export default {
       this.$emit('change', this.currentPerk)
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,62 +1,68 @@
 <template>
     <div>
         <div id="perkSlotContainerInner">
-            <perkslot0 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot0"
+                       :slotIndex="0"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksSHD.frames)"
+                       :perkData="survivorPerkNames"
                        v-if="renderSlot"
             />
-            <perkslot1 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot1"
+                       :slotIndex="1"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksSHD.frames)"
+                       :perkData="survivorPerkNames"
                        v-if="renderSlot"
             />
-            <perkslot2 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot2"
+                       :slotIndex="2"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksSHD.frames)"
+                       :perkData="survivorPerkNames"
                        v-if="renderSlot"
             />
-            <perkslot3 @reRollRequested="randomize"
+            <perk-slot @reRollRequested="randomize"
                        ref="perkslot3"
+                       :slotIndex="3"
                        type="Surv"
                        :elementLength="elementLength"
                        :colorized="color"
                        :lang="lang"
-                       :perkData="Object.keys(perksSHD.frames)"
+                       :perkData="survivorPerkNames"
                        v-if="renderSlot"
             />
         </div>
         <div v-if="hintVisible" class="hint-text">
-            <img src="/img/icon_shortinfo.png" slot="icon" alt="Survivor" class="info-icon">
+            <img src="/img/icon_shortinfo.png" alt="Survivor" class="info-icon">
             <span v-html="$t('snippets.startPerkRoll')"></span>
         </div>
     </div>
 </template>
 
-<script>
-import PixiPerkSlot from '../components/PixiPerkSlot'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
+import PerkSlot from '../components/PerkSlot.vue'
 import rand from '@/lib/randomize'
 import vp from '@/lib/viewport'
+import type { Perk } from '@/types'
 
-export default {
+type PerkSlotInstance = InstanceType<typeof PerkSlot>
+
+export default defineComponent({
   name: 'Survivor',
   components: {
-    perkslot0: PixiPerkSlot,
-    perkslot1: PixiPerkSlot,
-    perkslot2: PixiPerkSlot,
-    perkslot3: PixiPerkSlot
+    PerkSlot
   },
   props: {
     lang: {
@@ -69,27 +75,27 @@ export default {
       required: false
     },
     sids: {
-      type: Array,
+      type: Array as PropType<string[]>,
       default: function () {
         return []
       },
       required: false
     },
     kids: {
-      type: Array,
+      type: Array as PropType<string[]>,
       default: function () {
         return []
       },
       required: false
     },
-    perksSHD: {
-      type: Object,
+    survivorPerkNames: {
+      type: Array as PropType<string[]>,
       required: true
     }
   },
   data: function () {
-    const survivorsRaw = Object.keys(this.perksSHD.frames)
-    const survivors = []
+    const survivorsRaw = this.survivorPerkNames
+    const survivors: Perk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, sLen = survivorsRaw.length; i < sLen; i++) {
       const perkFileName = survivorsRaw[i]
@@ -102,8 +108,8 @@ export default {
     return {
       perkData: survivors,
       hintVisible: true,
-      lastRoll: [],
-      initialElLen: null,
+      lastRoll: [] as Perk[],
+      initialElLen: null as number | null,
       renderSlot: true
     }
   },
@@ -113,9 +119,9 @@ export default {
     }
   },
   methods: {
-    randomize: function (el, ev) {
+    randomize: function (slotIndex?: number, ev?: PointerEvent) {
       // if shift is pressed, only randomize the perk that was clicked
-      if (el && ev.data.originalEvent.shiftKey && (this.sids.length > 4 || this.sids.length === 0)) {
+      if (ev && ev.shiftKey && (this.sids.length > 4 || this.sids.length === 0)) {
         let randomSingle = rand.getRandomData(1, this.sids, this.perkData, this.lastRoll)
         let counter = 0
         // while the perk is in the last roll, get a new random perk, give up after 10 tries
@@ -124,11 +130,10 @@ export default {
           randomSingle = rand.getRandomData(1, this.sids, this.perkData, this.lastRoll)
           counter++
         }
-        // update the lastroll with the new perk, using the component tag (e.g. 'perkslot0') to get the index
-        const replaceIndex = parseInt(el.$options._componentTag.slice(-1))
-        this.lastRoll[replaceIndex] = randomSingle[0]
+        // update the lastroll with the new perk, using the slot index emitted by the component
+        this.lastRoll[slotIndex as number] = randomSingle[0]
         // actually roll the slot to the new perk
-        el.rollWheel(randomSingle[0], this.$t(`perks.survivor.desc.${randomSingle[0].name}`))
+        ;(this.$refs['perkslot' + slotIndex] as PerkSlotInstance).rollWheel(randomSingle[0], this.$t(`perks.survivor.desc.${randomSingle[0].name}`))
         return
       }
       if (!this.lastRoll) this.lastRoll = [this.perkData[0], this.perkData[0], this.perkData[0], this.perkData[0]]
@@ -136,10 +141,10 @@ export default {
       this.hintVisible = false
 
       this.lastRoll = random
-      this.$refs.perkslot0.rollWheel(random[0], this.$t(`perks.survivor.desc.${random[0].name}`))
-      this.$refs.perkslot1.rollWheel(random[1], this.$t(`perks.survivor.desc.${random[1].name}`))
-      this.$refs.perkslot2.rollWheel(random[2], this.$t(`perks.survivor.desc.${random[2].name}`))
-      this.$refs.perkslot3.rollWheel(random[3], this.$t(`perks.survivor.desc.${random[3].name}`))
+      ;(this.$refs.perkslot0 as PerkSlotInstance).rollWheel(random[0], this.$t(`perks.survivor.desc.${random[0].name}`))
+      ;(this.$refs.perkslot1 as PerkSlotInstance).rollWheel(random[1], this.$t(`perks.survivor.desc.${random[1].name}`))
+      ;(this.$refs.perkslot2 as PerkSlotInstance).rollWheel(random[2], this.$t(`perks.survivor.desc.${random[2].name}`))
+      ;(this.$refs.perkslot3 as PerkSlotInstance).rollWheel(random[3], this.$t(`perks.survivor.desc.${random[3].name}`))
     }
   },
   mounted: function () {
@@ -148,7 +153,7 @@ export default {
     // causing the perk slots to be rendered to big and not two side-by-side on mobile devices
 
     // Get the floating point value of the available render space
-    const docWidth = document.getElementById('perkSlotContainerInner').getBoundingClientRect().width
+    const docWidth = (document.getElementById('perkSlotContainerInner') as HTMLElement).getBoundingClientRect().width
 
     // Check if all four slots fit side-by side
     if (vp.getElementLength() * 4 > docWidth && screen.availHeight > screen.availWidth) { // we are in portrait mode, create 2x2
@@ -186,14 +191,14 @@ export default {
       document.getElementsByTagName('body')[0].removeAttribute('style')
     }
     const obs = this.$route.query.obs
-    const as = parseInt(this.$route.query.autostart)
+    const as = parseInt(this.$route.query.autostart as string)
     if (!isNaN(as) && as > 0 && obs !== '1') {
       window.setTimeout(() => {
         this.randomize()
       }, as)
     }
     if (obs === '1' && window.obsstudio) {
-      const delayedRand = (visible) => {
+      const delayedRand = (visible: boolean) => {
         if (!visible) return
         window.setTimeout(() => {
           this.randomize()
@@ -212,7 +217,7 @@ export default {
       }
     })
   }
-}
+})
 </script>
 
 <style lang="scss">

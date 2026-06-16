@@ -1,23 +1,33 @@
 <template>
-    <div id="app">
+    <!-- Vue 3 renders inside the #app container instead of replacing it,
+         so the root element must not duplicate the id -->
+    <div>
         <div class="header">
             <div class="nav container">
                 <div class="">
                     <BackButton v-if="routerName !== 'home'" class="nav-button nav__left" :routerLink="{ name: 'home', query: $route.query }">
-                        <img src="/img/icon_exit.png" slot="icon" alt="Survivor" class="ui-mobile-icon">
+                        <template #icon>
+                            <img src="/img/icon_exit.png" alt="Survivor" class="ui-mobile-icon">
+                        </template>
                         {{ $t('snippets.buttonHome') }}
                     </BackButton>
                 </div>
                 <UiButton v-if="routerName !== 'killer'  && routerName === 'home'" class="nav-button nav__left" direction="left" :routerLink="{ name: 'killer', query: $route.query }">
-                    <img src="/img/icon_killer.png" slot="icon" alt="Killer" class="ui-mobile-icon">
+                    <template #icon>
+                        <img src="/img/icon_killer.png" alt="Killer" class="ui-mobile-icon">
+                    </template>
                     {{ $t('snippets.buttonKillRoulette') }}
                 </UiButton>
                 <UiButton v-if="routerName !== 'killer' && routerName !== 'home'" class="nav-button nav__right" direction="right" :routerLink="{ name: 'killer', query: $route.query }">
-                    <img src="/img/icon_killer.png" slot="icon" alt="Killer" class="ui-mobile-icon">
+                    <template #icon>
+                        <img src="/img/icon_killer.png" alt="Killer" class="ui-mobile-icon">
+                    </template>
                     {{ $t('snippets.buttonKillRoulette') }}
                 </UiButton>
                 <UiButton v-if="routerName !== 'survivor'" class="nav-button nav__right" direction="right" :routerLink="{ name: 'survivor', query: $route.query }">
-                    <img src="/img/icon_survivor.png" slot="icon" alt="Survivor"  class="ui-mobile-icon">
+                    <template #icon>
+                        <img src="/img/icon_survivor.png" alt="Survivor" class="ui-mobile-icon">
+                    </template>
                     {{ $t('snippets.buttonSurvRoulette') }}
                 </UiButton>
             </div>
@@ -39,11 +49,12 @@
     </div>
 </template>
 
-<script>
-import UiButton from './components/UiButton'
-import BackButton from './components/BackButton'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import UiButton from './components/UiButton.vue'
+import BackButton from './components/BackButton.vue'
 
-export default {
+export default defineComponent({
   components: {
     UiButton,
     BackButton
@@ -54,9 +65,9 @@ export default {
     }
   },
   mounted: function () {
-    this.$i18n.locale = this.$route.query.lang ? this.$route.query.lang.toLowerCase() : 'en'
+    this.$i18n.locale = this.$route.query.lang ? (this.$route.query.lang as string).toLowerCase() : 'en'
   }
-}
+})
 </script>
 
 <style lang="scss">
@@ -71,7 +82,7 @@ export default {
     body {
         font-family: $font-family-default;
         line-height: 1.4;
-        background: $color-background url("../public/img/Background-Main.jpg") no-repeat center center fixed;
+        background: $color-background url("/img/Background-Main.jpg") no-repeat center center fixed;
         background-size: cover;
         color: $color-text;
         top: 0;

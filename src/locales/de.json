@@ -8,7 +8,7 @@
     "buttonHome": "Startseite",
     "buttonKillRoulette": "Killer-Roulette",
     "buttonSurvRoulette": "Überlebenden-Roulette",
-    "update": "Aktuelles Update: All-Kill: Comeback",
+    "update": "Aktuelles Update: Jason",
     "toggleColoredIcons": "Farbige Perks in der Roulettansicht ein/ausschalten."
   },
   "about": {
@@ -208,6 +208,9 @@
       "136_hiveMind": "Schwarmintelligenz",
       "137_secretProject": "Geheimprojekt",
       "138_turnBackTheClock": "Die Uhr zurückdrehen",
+      "139_rampage": "Randale",
+      "140_scaredToDeath": "Todesangst",
+      "141_silentShadow": "Lautloser Schatten",
       "desc": {}
     },
     "survivor": {

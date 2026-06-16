@@ -8,7 +8,7 @@
     "buttonHome": "Accueil",
     "buttonKillRoulette": "Roulette Tueur",
     "buttonSurvRoulette": "Roulette Survivant",
-    "update": "Dernière mise à jour: All-Kill: Comeback",
+    "update": "Dernière mise à jour: Jason",
     "toggleColoredIcons": "Afficher sur la roulette les images colorées des compétences"
   },
   "about": {
@@ -205,6 +205,9 @@
       "136_hiveMind": "Hive Mind",
       "137_secretProject": "Secret Project",
       "138_turnBackTheClock": "Turn Back The Clock",
+      "139_rampage": "Rampage",
+      "140_scaredToDeath": "Scared To Death",
+      "141_silentShadow": "Silent Shadow",
       "desc": {}
     },
     "survivor": {

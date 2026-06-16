@@ -8,7 +8,7 @@
     "buttonHome": "Home",
     "buttonKillRoulette": "キラールーレット",
     "buttonSurvRoulette": "サバイバールーレット",
-    "update": "Current Update: All-Kill: Comeback",
+    "update": "Current Update: Jason",
     "toggleColoredIcons": "Toggle colored perk images in the roulette view."
   },
   "about": {
@@ -208,6 +208,9 @@
       "136_hiveMind": "Hive Mind",
       "137_secretProject": "Secret Project",
       "138_turnBackTheClock": "Turn Back The Clock",
+      "139_rampage": "Rampage",
+      "140_scaredToDeath": "Scared To Death",
+      "141_silentShadow": "Silent Shadow",
       "desc": {}
     },
     "survivor": {

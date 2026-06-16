@@ -13,25 +13,30 @@
                 </div>
                 <PerkSwitch :itemLength="elementLength" :key="perk.index" @change="perkChange" v-for="perk in orderedPerks" :perk="perk" :name="translate(perk.name)" :type="type"/>
             </div>
-            <div v-if="infoCondition" class="perk-overview__box">
+            <div v-else-if="infoCondition" class="perk-overview__box">
                 <InfoText/>
             </div>
         </transition>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
 import vp from '@/lib/viewport'
 import PerkSwitch from './PerkSwitch.vue'
 import GlobalSelectionSwitch from './GlobalSelectionSwitch.vue'
 import InfoText from './InfoText.vue'
+import type { SelectablePerk } from '@/types'
 
-export default {
+export default defineComponent({
   name: 'MenuItem',
+
+  emits: ['change', 'resetPerks'],
 
   props: {
     perks: {
-      type: Array,
+      type: Array as PropType<SelectablePerk[]>,
       default () {
         return []
       }
@@ -67,12 +72,6 @@ export default {
         'is--collapsed': this.isCollapsed
       }
     },
-    cssProps () {
-      const idx = this.perk.index
-      return {
-        '--slotBg': `url('/img/${this.imageFileName}') 0 ${idx === 0 ? 0 : (128 * idx * -1) + 'px'}`
-      }
-    },
     perkCondition () {
       return this.perks.length > 0 && this.isCollapsed
     },
@@ -80,10 +79,11 @@ export default {
       return this.type === 'Info' && this.isCollapsed
     },
     orderedPerks () {
-      const me = this
-      return me.perks.sort((a, b) => {
-        const nameA = me.translate(a.name).toLowerCase()
-        const nameB = me.translate(b.name).toLowerCase()
+      // copy before sorting: mutating a prop inside a computed warns in Vue 3
+      return [...this.perks].sort((a, b) => {
+        // typed as nullable to keep the original null-handling branch intact
+        const nameA: string | null = this.translate(a.name).toLowerCase()
+        const nameB: string | null = this.translate(b.name).toLowerCase()
         if (nameA === nameB) {
           return 0
         } else if (nameA === null || nameB === null) {
@@ -95,15 +95,16 @@ export default {
   },
 
   methods: {
-    translate (name) {
+    translate (name: string) {
       return this.$t(`perks.${this.type.toLowerCase()}.${name}`)
     },
     toggleCollapsed () {
       this.isCollapsed = !this.isCollapsed
     },
-    perkChange (perk) {
+    perkChange (perk: SelectablePerk) {
       for (let i = 0; i < this.perks.length; i++) {
         if (perk.index === this.perks[i].index) {
+          // eslint-disable-next-line vue/no-mutating-props -- Home.vue owns these objects and reads the mutation back; long-standing design
           this.perks[i].checked = perk.checked
           this.$emit('change', this.type)
           return
@@ -111,7 +112,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -186,7 +187,7 @@ export default {
             opacity: 1;
         }
 
-        .fade-enter,
+        .fade-enter-from,
         .fade-leave-to {
             transform: translateY(-50px);
             opacity: 0;

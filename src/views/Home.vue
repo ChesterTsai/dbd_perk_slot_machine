@@ -3,7 +3,7 @@
     <div class="language-switch overview__box">
       <img
         @click="changeLang('en')"
-        src="img/flags/united-kingdom.svg"
+        src="/img/flags/united-kingdom.svg"
         width="32"
         height="32"
         alt="english"
@@ -11,7 +11,7 @@
       />
       <img
         @click="changeLang('de')"
-        src="img/flags/germany.svg"
+        src="/img/flags/germany.svg"
         width="32"
         height="32"
         alt="deutsch"
@@ -19,7 +19,7 @@
       />
       <img
         @click="changeLang('fr')"
-        src="img/flags/france.svg"
+        src="/img/flags/france.svg"
         width="32"
         height="32"
         alt="français"
@@ -27,7 +27,7 @@
       />
       <img
         @click="changeLang('es')"
-        src="img/flags/spain.svg"
+        src="/img/flags/spain.svg"
         width="32"
         height="32"
         alt="español"
@@ -35,7 +35,7 @@
       />
       <img
         @click="changeLang('ja')"
-        src="img/flags/japan.svg"
+        src="/img/flags/japan.svg"
         width="32"
         height="32"
         alt="日本語"
@@ -72,10 +72,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
 import MenuItem from '../components/MenuItem.vue'
+import type { SelectablePerk } from '@/types'
 
-export default {
+export default defineComponent({
   name: 'home',
   components: {
     MenuItem
@@ -91,30 +94,30 @@ export default {
       required: false
     },
     sids: {
-      type: Array,
+      type: Array as PropType<string[]>,
       default: function () {
         return []
       },
       required: false
     },
     kids: {
-      type: Array,
+      type: Array as PropType<string[]>,
       default: function () {
         return []
       },
       required: false
     },
-    perksKHD: {
-      type: Object,
+    killerPerkNames: {
+      type: Array as PropType<string[]>,
       required: true
     },
-    perksSHD: {
-      type: Object,
+    survivorPerkNames: {
+      type: Array as PropType<string[]>,
       required: true
     }
   },
   methods: {
-    changeLang (lang) {
+    changeLang (lang: string) {
       const { ...q } = this.$route.query
       q.lang = lang
       this.$i18n.locale = lang
@@ -123,10 +126,10 @@ export default {
     toggleColoredIcons () {
       const { ...q } = this.$route.query
       q.color = q.color === '1' ? '0' : '1'
-      this.artistPalette = q.color === '1' ? 'img/artist-palette.svg' : 'img/artist-palette-bw.svg'
+      this.artistPalette = q.color === '1' ? '/img/artist-palette.svg' : '/img/artist-palette-bw.svg'
       this.$router.push({ path: this.$route.path, query: q })
     },
-    resetPerks (type) {
+    resetPerks (type: string) {
       const { ...query } = this.$route.query
       switch (type) {
         case 'Survivor':
@@ -161,10 +164,10 @@ export default {
           break
       }
     },
-    change (type) {
+    change (type: string) {
       let perkExclusion = false
       const { ...query } = this.$route.query
-      const chosenPerks = []
+      const chosenPerks: number[] = []
       switch (type) {
         case 'Survivor':
           for (let i = 0; i < this.perks.survivors.length; i++) {
@@ -197,8 +200,7 @@ export default {
           this.$router.push({ path: this.$route.path, query: query })
           break
         default:
-          // eslint-disable-next-line
-          console.warn(`changes to unknown perk type ${type}`);
+          console.warn(`changes to unknown perk type ${type}`)
       }
     }
   },
@@ -223,10 +225,10 @@ export default {
   },
   data () {
     const { ...q } = this.$route.query
-    const initialArtistPalette = q.color === '1' ? 'img/artist-palette.svg' : 'img/artist-palette-bw.svg'
+    const initialArtistPalette = q.color === '1' ? '/img/artist-palette.svg' : '/img/artist-palette-bw.svg'
 
-    const survivorsRaw = Object.keys(this.perksSHD.frames)
-    const survivors = []
+    const survivorsRaw = this.survivorPerkNames
+    const survivors: SelectablePerk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, sLen = survivorsRaw.length; i < sLen; i++) {
       const perkFileName = survivorsRaw[i]
@@ -238,8 +240,8 @@ export default {
       }
     }
 
-    const killersRaw = Object.keys(this.perksKHD.frames)
-    const killers = []
+    const killersRaw = this.killerPerkNames
+    const killers: SelectablePerk[] = []
     // make sure array keys match the ids in file name. TODO maybe make sure no key is reassigned because of naming issues
     for (let i = 0, kLen = killersRaw.length; i < kLen; i++) {
       const perkFileName = killersRaw[i]
@@ -259,7 +261,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -340,9 +342,4 @@ export default {
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
-</style>
-
-<style lang="scss">
-@import "../../public/sprites/surv-css.css";
-@import "../../public/sprites/kill-css.css";
 </style>
