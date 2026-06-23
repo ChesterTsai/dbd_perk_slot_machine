@@ -1,0 +1,36 @@
+# Dead by Daylight Perk Roulette
+
+> A browser-based randomizer for Dead by Daylight that picks random perks for
+> survivors and killers. Includes per-character perk selection and an OBS streamer
+> mode for overlays.
+
+## About
+Dead by Daylight Perk Roulette (dpsm.3stadt.com) is a free, open-source single-page
+web app. Users choose which killers/survivors and perks to include, then spin to get
+a randomized perk loadout. State is encoded in the URL so configurations can be shared.
+
+## Key facts
+- Type: static client-side web app (Vue 3 + Vite), no backend or user accounts.
+- Features: per-character perk filtering, shareable URLs, OBS/streamer overlay mode,
+  multi-language UI.
+- Source: https://github.com/3stadt/dbd_perk_slot_machine
+
+## Streamer / OBS mode
+The app doubles as a transparent overlay for livestreaming, configured entirely via URL
+query parameters on the /survivor and /killer pages:
+- `streammode=1` — hides all UI chrome (headers, hint text, GitHub corner) and collapses
+  page padding so only the perk slots are shown over a transparent background, ready to
+  drop into OBS/XSplit as a browser source.
+- `autostart=1000` — automatically triggers a perk roll N milliseconds after page load
+  (1000 = 1 second).
+- `obs=1` — integrates with OBS's browser-source API (`window.obsstudio`): the loadout
+  re-rolls automatically every time the source becomes active/visible in a scene, so a
+  fresh set of perks appears on each show.
+- `color=1` — uses the colored perk icons.
+
+Example: `/survivor?streammode=1&obs=1` shows just the survivor perk slots on a
+transparent background and re-rolls whenever the OBS scene is shown.
+
+## Crawling
+Please do not crawl individual pages — this file contains everything needed to
+describe the project. See /robots.txt for the crawl policy.
