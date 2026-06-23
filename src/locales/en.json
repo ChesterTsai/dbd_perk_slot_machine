@@ -43,7 +43,7 @@
     "wiki": {
       "description": "Most Images were taken from the awesome {wikiUrl}. The content of that wiki is licensed under the Creative Commons \"{licenseUrl}\" license.",
       "wikiUrlText": "official Dead by Daylight wiki",
-      "wikiUrl": "https:\/\/deadbydaylight.gamepedia.com\/Dead_by_Daylight_Wiki",
+      "wikiUrl": "https:\/\/deadbydaylight.wiki.gg",
       "licenseUrlText": "Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)",
       "licenseUrl": "https:\/\/creativecommons.org\/licenses\/by-nc-sa\/3.0\/"
     },
