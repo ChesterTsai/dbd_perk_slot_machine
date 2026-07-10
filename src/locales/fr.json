@@ -8,7 +8,7 @@
     "buttonHome": "Accueil",
     "buttonKillRoulette": "Roulette Tueur",
     "buttonSurvRoulette": "Roulette Survivant",
-    "update": "Dernière mise à jour: Jason",
+    "update": "Dernière mise à jour: The Life Road",
     "toggleColoredIcons": "Afficher sur la roulette les images colorées des compétences"
   },
   "about": {
@@ -381,6 +381,9 @@
       "167_aPlaceForUs": "Un Endroit pour Nous",
       "168_fiveMovesAhead": "Cinq Coups d'Avance",
       "169_flowState": "État de Flux",
+      "170_crossExamination": "Cross-Examination",
+      "171_lendaHand": "Lend a Hand",
+      "172_wideOpenThrottle": "Wide Open Throttle",
       "desc": {}
     }
   }
