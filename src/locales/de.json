@@ -8,7 +8,7 @@
     "buttonHome": "Startseite",
     "buttonKillRoulette": "Killer-Roulette",
     "buttonSurvRoulette": "Überlebenden-Roulette",
-    "update": "Aktuelles Update: Jason",
+    "update": "Aktuelles Update: The Life Road",
     "toggleColoredIcons": "Farbige Perks in der Roulettansicht ein/ausschalten."
   },
   "about": {
@@ -384,6 +384,9 @@
       "167_aPlaceForUs": "Ein Platz für uns",
       "168_fiveMovesAhead": "Fünf Züge voraus",
       "169_flowState": "Im Flow",
+      "170_crossExamination": "Kreuzverhör",
+      "171_lendaHand": "Zur Hand gehen",
+      "172_wideOpenThrottle": "Vollgas",
       "desc": {}
     }
   }

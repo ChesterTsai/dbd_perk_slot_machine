@@ -8,7 +8,7 @@
     "buttonHome": "Home",
     "buttonKillRoulette": "Ruleta para Killer",
     "buttonSurvRoulette": "Ruleta para Survivor",
-    "update": "Current Update: Jason",
+    "update": "Current Update: The Life Road",
     "toggleColoredIcons": "Toggle colored perk images in the roulette view."
   },
   "about": {
@@ -384,6 +384,9 @@
       "167_aPlaceForUs": "Un Lugar Para Nosotros",
       "168_fiveMovesAhead": "Cinco Movimientos Adelante",
       "169_flowState": "Estado de Flujo",
+      "170_crossExamination": "Interrogatorio",
+      "171_lendaHand": "Echar una Mano",
+      "172_wideOpenThrottle": "Máxima Velocidad",
       "desc": {}
     }
   }
