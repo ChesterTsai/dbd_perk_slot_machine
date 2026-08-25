@@ -8,7 +8,7 @@
     "buttonHome": "Startseite",
     "buttonKillRoulette": "Killer-Roulette",
     "buttonSurvRoulette": "Überlebenden-Roulette",
-    "update": "Aktuelles Update: The Life Road",
+    "update": "Aktuelles Update: Chorus Of Sin",
     "toggleColoredIcons": "Farbige Perks in der Roulettansicht ein/ausschalten."
   },
   "about": {
@@ -211,6 +211,9 @@
       "139_rampage": "Randale",
       "140_scaredToDeath": "Todesangst",
       "141_silentShadow": "Lautloser Schatten",
+      "142_layWaste": "Verheeren",
+      "143_underYourThumb": "Unter deiner Knute",
+      "144_celestialWitness": "Himmlischer Zeuge",
       "desc": {}
     },
     "survivor": {
@@ -387,6 +390,9 @@
       "170_crossExamination": "Kreuzverhör",
       "171_lendaHand": "Zur Hand gehen",
       "172_wideOpenThrottle": "Vollgas",
+      "173_steadfast": "Standhaft",
+      "174_salvationsCry": "Ruf der Erlösung",
+      "175_fruitsOfYourLabor": "Früchte deiner Arbeit",
       "desc": {}
     }
   }
