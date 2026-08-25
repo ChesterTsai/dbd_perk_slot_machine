@@ -8,7 +8,7 @@
     "buttonHome": "Home",
     "buttonKillRoulette": "キラールーレット",
     "buttonSurvRoulette": "サバイバールーレット",
-    "update": "Current Update: The Life Road",
+    "update": "Current Update: Chorus Of Sin",
     "toggleColoredIcons": "Toggle colored perk images in the roulette view."
   },
   "about": {
@@ -211,6 +211,9 @@
       "139_rampage": "大暴れ",
       "140_scaredToDeath": "死ぬほど怖い",
       "141_silentShadow": "物言わぬ影",
+      "142_layWaste": "Lay Waste",
+      "143_underYourThumb": "Under Your Thumb",
+      "144_celestialWitness": "Celestial Witness",
       "desc": {}
     },
     "survivor": {
@@ -387,6 +390,9 @@
       "170_crossExamination": "反対尋問",
       "171_lendaHand": "手助け",
       "172_wideOpenThrottle": "アクセル全開",
+      "173_steadfast": "Steadfast",
+      "174_salvationsCry": "Salvation's Cry",
+      "175_fruitsOfYourLabor": "Fruits of Your Labor",
       "desc": {}
     }
   }

@@ -8,7 +8,7 @@
     "buttonHome": "Home",
     "buttonKillRoulette": "Killer Roulette",
     "buttonSurvRoulette": "Survivor Roulette",
-    "update": "Current Update: The Life Road",
+    "update": "Current Update: Chorus Of Sin",
     "toggleColoredIcons": "Toggle colored perk images in the roulette view."
   },
   "about": {
@@ -211,6 +211,9 @@
       "139_rampage": "Rampage",
       "140_scaredToDeath": "Scared To Death",
       "141_silentShadow": "Silent Shadow",
+      "142_layWaste": "Lay Waste",
+      "143_underYourThumb": "Under Your Thumb",
+      "144_celestialWitness": "Celestial Witness",
       "desc": {}
     },
     "survivor": {
@@ -387,6 +390,9 @@
       "170_crossExamination": "Cross-Examination",
       "171_lendaHand": "Lend a Hand",
       "172_wideOpenThrottle": "Wide Open Throttle",
+      "173_steadfast": "Steadfast",
+      "174_salvationsCry": "Salvation's Cry",
+      "175_fruitsOfYourLabor": "Fruits of Your Labor",
       "desc": {}
     }
   }
