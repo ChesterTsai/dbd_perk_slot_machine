@@ -8,7 +8,7 @@
     "buttonHome": "Accueil",
     "buttonKillRoulette": "Roulette Tueur",
     "buttonSurvRoulette": "Roulette Survivant",
-    "update": "Dernière mise à jour: The Life Road",
+    "update": "Dernière mise à jour: Chorus Of Sin",
     "toggleColoredIcons": "Afficher sur la roulette les images colorées des compétences"
   },
   "about": {
@@ -208,6 +208,9 @@
       "139_rampage": "Rampage",
       "140_scaredToDeath": "Frayeur Mortelle",
       "141_silentShadow": "Ombre Silencieuse",
+      "142_layWaste": "Lay Waste",
+      "143_underYourThumb": "Under Your Thumb",
+      "144_celestialWitness": "Celestial Witness",
       "desc": {}
     },
     "survivor": {
@@ -384,6 +387,9 @@
       "170_crossExamination": "Cross-Examination",
       "171_lendaHand": "Lend a Hand",
       "172_wideOpenThrottle": "Wide Open Throttle",
+      "173_steadfast": "Steadfast",
+      "174_salvationsCry": "Salvation's Cry",
+      "175_fruitsOfYourLabor": "Fruits of Your Labor",
       "desc": {}
     }
   }
